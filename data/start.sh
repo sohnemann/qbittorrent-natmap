@@ -79,26 +79,25 @@ qbt_isreachable(){
 }
 
 fw_delrule(){
-    if (docker exec "${VPN_CT_NAME}" /sbin/iptables -L INPUT -n | grep -qP "^ACCEPT.*${configured_port}.*"); then
+    if (docker exec "${VPN_CT_NAME}" /sbin/iptables-legacy -L INPUT -n | grep -qP "^ACCEPT.*${configured_port}.*"); then
         # shellcheck disable=SC2086
-        docker exec "${VPN_CT_NAME}" /sbin/iptables -D INPUT -i "${VPN_IF_NAME}" -p tcp --dport ${configured_port} -j ACCEPT
+        docker exec "${VPN_CT_NAME}" /sbin/iptables-legacy -D INPUT -i "${VPN_IF_NAME}" -p tcp --dport ${configured_port} -j ACCEPT
         # shellcheck disable=SC2086
-        docker exec "${VPN_CT_NAME}" /sbin/iptables -D INPUT -i "${VPN_IF_NAME}" -p udp --dport ${configured_port} -j ACCEPT
+        docker exec "${VPN_CT_NAME}" /sbin/iptables-legacy -D INPUT -i "${VPN_IF_NAME}" -p udp --dport ${configured_port} -j ACCEPT
     fi
 }
 
 fw_addrule(){
-    if ! (docker exec "${VPN_CT_NAME}" /sbin/iptables -L INPUT -n | grep -qP "^ACCEPT.*${active_port}.*"); then
+    if ! (docker exec "${VPN_CT_NAME}" /sbin/iptables-legacy -L INPUT -n | grep -qP "^ACCEPT.*${active_port}.*"); then
         # shellcheck disable=SC2086
-        docker exec "${VPN_CT_NAME}" /sbin/iptables -A INPUT -i "${VPN_IF_NAME}" -p tcp --dport ${active_port} -j ACCEPT
+        docker exec "${VPN_CT_NAME}" /sbin/iptables-legacy -A INPUT -i "${VPN_IF_NAME}" -p tcp --dport ${active_port} -j ACCEPT
         # shellcheck disable=SC2086
-        docker exec "${VPN_CT_NAME}" /sbin/iptables -A INPUT -i "${VPN_IF_NAME}" -p udp --dport ${active_port} -j ACCEPT
+        docker exec "${VPN_CT_NAME}" /sbin/iptables-legacy -A INPUT -i "${VPN_IF_NAME}" -p udp --dport ${active_port} -j ACCEPT
         return 0
     else
         return 1
     fi
 }
-
 get_portmap() {
     res=0
     public_ip=$(getpublicip)
